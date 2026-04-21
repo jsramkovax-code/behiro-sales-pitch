@@ -967,6 +967,83 @@ body { padding-top: 52px !important; }
   #nav-label { display: none; }
   .callout { padding: 10px 12px !important; }
 }
+
+/* ── SALES USECASE STYLING ───────────────────────── */
+
+/* Sales script quotes — text starting with „ */
+.sales-script {
+  background: #fffbe6 !important;
+  border-left: 4px solid #f59e0b !important;
+  padding: 10px 14px 10px 14px !important;
+  border-radius: 0 8px 8px 0 !important;
+  margin: 8px 0 !important;
+  font-style: italic;
+  color: #1a1a18 !important;
+  display: block;
+}
+
+/* Action instructions — what to DO (not say) */
+.sales-action {
+  background: #f0f9ff !important;
+  border-left: 4px solid #3b82f6 !important;
+  padding: 8px 14px !important;
+  border-radius: 0 8px 8px 0 !important;
+  margin: 6px 0 !important;
+  color: #1a1a18 !important;
+  display: block;
+  font-size: 0.9rem !important;
+}
+
+/* Forbidden words */
+.sales-forbidden li {
+  background: rgba(220,38,38,0.08) !important;
+  color: #991b1b !important;
+  border-radius: 4px;
+  padding: 3px 8px !important;
+  margin-bottom: 3px !important;
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+}
+
+/* Stats / key numbers */
+.sales-stat {
+  font-size: 1.5rem !important;
+  font-weight: 800 !important;
+  color: #059669 !important;
+  letter-spacing: -0.03em;
+}
+
+/* Section accent colors in nav */
+#section-nav a[href*="pred-schuzkou"] { border-bottom: 2px solid #f59e0b; }
+#section-nav a[href*="discovery"]     { border-bottom: 2px solid #3b82f6; }
+#section-nav a[href*="demo"]          { border-bottom: 2px solid #8b5cf6; }
+#section-nav a[href*="closing"]       { border-bottom: 2px solid #10b981; }
+#section-nav a[href*="principy"]      { border-bottom: 2px solid #ef4444; }
+
+#section-nav a[href*="pred-schuzkou"].active { background: #f59e0b; color: #fff; }
+#section-nav a[href*="discovery"].active     { background: #3b82f6; color: #fff; }
+#section-nav a[href*="demo"].active          { background: #8b5cf6; color: #fff; }
+#section-nav a[href*="closing"].active       { background: #10b981; color: #fff; }
+#section-nav a[href*="principy"].active      { background: #ef4444; color: #fff; }
+
+/* Section h1 badge colors */
+h1[id*="discovery"]:not(.page-main-title) { background: #3b82f6 !important; }
+h1[id*="demo"]:not(.page-main-title)      { background: #8b5cf6 !important; }
+h1[id*="closing"]:not(.page-main-title)   { background: #10b981 !important; }
+h1[id*="principy"]:not(.page-main-title)  { background: #ef4444 !important; }
+
+/* Silence / pause tip */
+.sales-silence {
+  background: #1a1a18 !important;
+  color: #fff !important;
+  padding: 10px 16px !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  text-align: center;
+  letter-spacing: 0.05em;
+  margin: 12px 0 !important;
+  display: block;
+}
 </style>
 
 <div id="progress-bar"></div>
@@ -1023,4 +1100,40 @@ document.addEventListener('DOMContentLoaded', function() {
 </p></div><div style="display:contents" dir="auto"><p id="2d6d8a3f-5e39-80f1-b032-c729b7de18a5" class="">
 </p></div></div></article>
 
+
+<script id="sales-enhance">
+document.addEventListener('DOMContentLoaded', function() {
+  // Highlight script quotes (text starting with „ or ")
+  document.querySelectorAll('p, li').forEach(el => {
+    const t = el.textContent.trim();
+    if (t.startsWith('„') || t.startsWith('„')) {
+      el.classList.add('sales-script');
+    }
+  });
+
+  // Highlight "silence" tip
+  document.querySelectorAll('p, li').forEach(el => {
+    const t = el.textContent.trim();
+    if (t.includes('První kdo mluví') || t.includes('Nech ticho') || t.includes('Neříkej nic')) {
+      el.classList.add('sales-silence');
+    }
+  });
+
+  // Forbidden words list
+  document.querySelectorAll('li').forEach(li => {
+    if (li.textContent.trim().startsWith('❌')) {
+      li.parentElement.classList.add('sales-forbidden');
+    }
+  });
+
+  // Stats
+  document.querySelectorAll('p, li').forEach(el => {
+    el.innerHTML = el.innerHTML
+      .replace(/nad 80%/g, '<span class="sales-stat">nad 80%</span>')
+      .replace(/60%-70%/g, '<span class="sales-stat">60%–70%</span>')
+      .replace(/5\s*900\s*Kč/g, '<span class="sales-stat">5 900 Kč/měs</span>')
+      .replace(/3–6 měsíčních platů/g, '<strong>3–6 měsíčních platů</strong>');
+  });
+});
+</script>
 </body></html>
