@@ -1064,22 +1064,34 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
   const FULL_QUOTE = /^[„“"”]/;
 
-  // Blockquotes (Demo section speech lives here in Notion export)
+  // Paragraphs that are direct speech even without quotes
+  // (narrating demo, explaining product to customer)
+  const IMPLICIT_SPEECH = [
+    /^My\s/,              // "My děláme to, že..."
+    /Vidím,/,     // "Vidím, že 2 lidi..."
+    /nemušíte/i, // "nemusíte"
+    /^Můžete/,     // "Můžete být víc..."
+    /^Výhodou/,         // "Výhodou navíc je..."
+    /^Abyste/,               // "Abyste si nemuseli..."
+    /^Například tady/, // "Například tady v té firmě..."
+    /vaší firm/i,  // "kontext vaší firmy"
+  ];
+
+  // Blockquotes (Demo section speech lives here)
   document.querySelectorAll('blockquote').forEach(el => {
-    const t = el.textContent.trim();
-    if (FULL_QUOTE.test(t) || t.length > 15) {
-      el.classList.add('sales-script');
-    }
+    if (el.textContent.trim().length > 10) el.classList.add('sales-script');
   });
 
-  // p and li in callouts — but NOT in Principy section
+  // Principy anchor — everything AFTER it is excluded
   const principyAnchor = document.getElementById('anchor-principy');
+
   document.querySelectorAll('.callout p, .callout li').forEach(el => {
-    if (principyAnchor && el.compareDocumentPosition(principyAnchor) & Node.DOCUMENT_POSITION_PRECEDING) return;
+    if (principyAnchor && !(el.compareDocumentPosition(principyAnchor) & Node.DOCUMENT_POSITION_FOLLOWING)) return;
     const t = el.textContent.trim();
     if (t.startsWith('❌') || t.startsWith('✔') || t.length < 6) return;
-    if (/^(Cíl|Otázky|Fáze|Shrnutí|Cena|Next steps|Příběh|Bezpečná|Kontext|Výhoda|Příklad|Akce|Témata|Rychlost|Rychlá|Třeba využít|Potvrzení)/.test(t)) return;
-    if (FULL_QUOTE.test(t)) {
+    if (/^(Cíl|Otázky|Fáze|Shrnutí|Cena|Next steps|Bezpečná|Kontext|Příklad|Akce|Témata|Rychlost|Rychlá|Třeba využít|Potvrzení)/.test(t)) return;
+
+    if (FULL_QUOTE.test(t) || IMPLICIT_SPEECH.some(re => re.test(t))) {
       el.classList.add('sales-script');
     } else {
       el.innerHTML = el.innerHTML.replace(/„([^“]+)“/g,
@@ -1100,9 +1112,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Key stats
   document.querySelectorAll('p, li').forEach(el => {
     el.innerHTML = el.innerHTML
-      .replace(/nad 80\s*%/g, '<span class="sales-stat">nad 80 %</span>')
-      .replace(/60\s*%[-–]\s*70\s*%/g, '<span class="sales-stat">60–70 %</span>')
-      .replace(/5\s*900\s*Kč/g, '<span class="sales-stat">5 900 Kč/měs</span>');
+      .replace(/nad 80\s*%/g, '<span class="sales-stat">nad 80 %</span>')
+      .replace(/60\s*%[-–]\s*70\s*%/g, '<span class="sales-stat">60–70 %</span>')
+      .replace(/5\s*900\s*Kč/g, '<span class="sales-stat">5 900 Kč/měs</span>');
   });
 });
 </script>
