@@ -942,6 +942,31 @@ li { font-size: 0.95rem; line-height: 1.65; color: #2c2c2a; margin-bottom: 0.1em
 /* Anchor helpers */
 .anchor-target { display: block; height: 0; overflow: hidden; }
 .page-description { display: none !important; margin: 0 !important; }
+
+/* Article reset */
+article.page.sans { padding: 0 !important; margin: 0 !important; }
+
+/* Nav shadow */
+#section-nav { box-shadow: 0 1px 6px rgba(0,0,0,0.07); }
+
+/* Section blocks (gray callout wrapper) */
+.block-color-gray_background.callout { background: transparent !important; border: none !important; padding: 0 !important; }
+
+/* Smooth scroll */
+html { scroll-behavior: smooth; }
+
+/* Body top padding accounts for fixed nav */
+body { padding-top: 52px !important; }
+
+/* Mobile */
+@media (max-width: 640px) {
+  body { padding: 52px 14px 60px !important; }
+  .column-list { flex-direction: column !important; gap: 12px !important; }
+  .page-main-title { font-size: 1.25rem !important; }
+  h1:not(.page-main-title) { font-size: 0.75rem !important; }
+  #nav-label { display: none; }
+  .callout { padding: 10px 12px !important; }
+}
 </style>
 
 <div id="progress-bar"></div>
