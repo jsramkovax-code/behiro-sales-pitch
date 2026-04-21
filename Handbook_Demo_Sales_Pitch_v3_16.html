@@ -953,7 +953,7 @@ article.page.sans { padding: 0 !important; margin: 0 !important; }
 #section-nav { box-shadow: 0 1px 6px rgba(0,0,0,0.07); }
 
 /* Section blocks (gray callout wrapper) */
-.block-color-gray_background.callout { background: transparent !important; border: none !important; padding: 0 !important; }
+.block-color-gray_background.callout { background: #f0efec !important; border-color: #d6d4cf !important; }
 
 /* Smooth scroll */
 html { scroll-behavior: smooth; }
@@ -1047,6 +1047,9 @@ h1[id*="principy"]:not(.page-main-title)  { background: #ef4444 !important; }
   margin: 12px 0 !important;
   display: block;
 }
+
+/* Inline quote within mixed text */
+em.inline-quote { font-style: italic; background: rgba(245,158,11,0.15); border-radius: 3px; padding: 1px 3px; }
 </style>
 
 <div id="progress-bar"></div>
@@ -1101,36 +1104,52 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script id="sales-enhance">
 document.addEventListener('DOMContentLoaded', function() {
-  // Highlight script quotes (text starting with „ or ")
-  document.querySelectorAll('p, li').forEach(el => {
-    const t = el.textContent.trim();
-    if (t.startsWith('„') || t.startsWith('„')) {
+
+  // ── Direct speech detection ───────────────────────
+  // Quotes that are the WHOLE element
+  const FULL_QUOTE_START = /^[„"„“"]/;
+  // Inline quotes within mixed text
+  const INLINE_QUOTE = /„([^"]+)"/g;
+
+  document.querySelectorAll('.callout p, .callout li').forEach(el => {
+    const text = el.textContent.trim();
+
+    // Skip forbidden-words items and structural labels
+    if (text.startsWith('❌') || text.startsWith('✔') || text.length < 6) return;
+    // Skip pure labels (Cíl:, Otázky:, Akce pro manažera etc.)
+    if (/^(Cíl|Otázky|Fáze|Přechod|Shrnutí|Cena|Next steps|Příběh|Bezpečná|Kontext|Výhoda|Příklad|Akce|Témata|Rychlost|Rychlá):/.test(text)) return;
+
+    if (FULL_QUOTE_START.test(text)) {
+      // Entire element is direct speech
       el.classList.add('sales-script');
+    } else if (INLINE_QUOTE.test(text)) {
+      // Mixed: instruction + quoted response → italicize just the quote inline
+      INLINE_QUOTE.lastIndex = 0;
+      el.innerHTML = el.innerHTML.replace(/„([^"]+)"/g,
+        '<em class="inline-quote">„$1"</em>');
     }
   });
 
-  // Highlight "silence" tip
+  // ── Silence tip ──────────────────────────────────
   document.querySelectorAll('p, li').forEach(el => {
-    const t = el.textContent.trim();
-    if (t.includes('První kdo mluví') || t.includes('Nech ticho') || t.includes('Neříkej nic')) {
+    if (el.textContent.includes('První kdo mluví')) {
       el.classList.add('sales-silence');
     }
   });
 
-  // Forbidden words list
+  // ── Forbidden words ───────────────────────────────
   document.querySelectorAll('li').forEach(li => {
     if (li.textContent.trim().startsWith('❌')) {
       li.parentElement.classList.add('sales-forbidden');
     }
   });
 
-  // Stats
+  // ── Key stats ─────────────────────────────────────
   document.querySelectorAll('p, li').forEach(el => {
     el.innerHTML = el.innerHTML
-      .replace(/nad 80%/g, '<span class="sales-stat">nad 80%</span>')
-      .replace(/60%-70%/g, '<span class="sales-stat">60%–70%</span>')
-      .replace(/5\s*900\s*Kč/g, '<span class="sales-stat">5 900 Kč/měs</span>')
-      .replace(/3–6 měsíčních platů/g, '<strong>3–6 měsíčních platů</strong>');
+      .replace(/nad 80\s*%/g, '<span class="sales-stat">nad 80 %</span>')
+      .replace(/60\s*%[-–]\s*70\s*%/g, '<span class="sales-stat">60–70 %</span>')
+      .replace(/5\s*900\s*Kč/g, '<span class="sales-stat">5 900 Kč/měs</span>');
   });
 });
 </script>
