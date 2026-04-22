@@ -1022,6 +1022,43 @@ details.search-hidden { display: none !important; }
 mark.search-hl { background: rgba(124,58,237,0.15); color: inherit; border-radius: 2px; padding: 0 2px; }
 /* Toggle-all button — adjust position */
 #toggle-all-wrap { top: 126px !important; }
+
+/* ── Objection spacing fixes ─────────────────────────
+
+   Problem: callouts inside details have inline white-space:pre-wrap
+   which renders source newlines as visible gaps.
+   Also: top-level details need more separation from each other.
+*/
+
+/* Kill pre-wrap inside details content */
+details .callout,
+details p,
+details li { white-space: normal !important; }
+
+/* Tighter paragraph gaps INSIDE open details */
+details[open] > :not(summary) p  { margin: 0.15em 0 !important; }
+details[open] > :not(summary) li { margin-bottom: 0.1em !important; }
+
+/* Tighter callout gaps inside details */
+details[open] .callout { margin: 4px 0 !important; }
+details[open] blockquote { margin: 4px 0 !important; }
+
+/* More breathing room BETWEEN top-level details (parent objections) */
+details { margin-bottom: 4px; }
+details:not(details details) {
+  margin-top: 16px !important;
+  border-top: 1px solid #f0f0ee;
+  padding-top: 12px;
+}
+details:not(details details):first-of-type { border-top: none; padding-top: 0; margin-top: 8px !important; }
+
+/* Sub-objections (nested) — smaller gap */
+details details { margin-top: 6px !important; border-top: none; padding-top: 0; }
+details details + details details { margin-top: 4px !important; }
+
+/* Summary — slightly more padding so it breathes */
+details > summary { padding: 4px 4px 4px 2px; }
+details:not(details details) > summary { font-size: 0.97rem !important; }
 </style>
 <style id="obj-extra">#section-nav a.active{background:#7c3aed!important;color:#fff!important;}</style>
 </head><body>
