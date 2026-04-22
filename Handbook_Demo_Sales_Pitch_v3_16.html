@@ -868,10 +868,10 @@ hr { border: none !important; border-top: 1px solid #e8e8e6 !important; margin: 
 .callout p { margin: 0.25em 0 !important; }
 .callout h1, .callout h2, .callout h3 { margin: 0 0 0.4rem !important; }
 
-/* Yellow callout = direct speech hint from Notion */
+/* Yellow callout — same white as others; JS adds .sales-script for actual speech */
 .block-color-yellow_background {
-  background: #fffbeb !important;
-  border-color: #f0c040 !important;
+  background: #ffffff !important;
+  border-color: #e8e8e6 !important;
 }
 
 /* ── Direct speech (JS adds this class) ───────────── */
@@ -1003,17 +1003,21 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
   const FULL_QUOTE = /^[\u201e\u201c\u0022\u201d]/;
 
-  // Non-quoted paragraphs that ARE direct speech (narrating to customer)
+  // All confirmed non-quoted direct speech paragraphs
   const IMPLICIT_SPEECH = [
     /^My\s/,
-    /Vid\u00edm,\s/,          // Vidím, že...
-    /nemus\u00edte/i,          // nemusíte (fixed!)
-    /^M\u016f\u017eete\b/,     // Můžete
-    /^V\u00fdhodou\b/,         // Výhodou
-    /^Abyste\b/,               // Abyste
-    /^Nap\u0159\u00edklad tady/,// Například tady v té firmě
-    /va\u0161\u00ed firm/i,    // vaší firmy/firmě
-    /jsme ji/i,                // jsme ji implementovali
+    /Vid\u00edm,\s/,                   // Vidím, že...
+    /nemus\u00edte/i,                   // nemusíte
+    /^M\u016f\u017eete\b/,             // Můžete
+    /^V\u00fdhodou\b/,                 // Výhodou navíc je...
+    /^Abyste\b/,                        // Abyste si nemuseli...
+    /^Nap\u0159\u00edklad tady/,       // Například tady v té firmě...
+    /va\u0161\u00ed firm/i,            // vaší firmy/firmě
+    /jsme ji/i,                         // jsme ji implementovali
+    /^C\u00edlem je\b/,                // Cílem je aby se z manažerů...
+    /^T\u011bch t\u00e9mat\b/,        // Těch témat je tam hodně...
+    /^Super na tom je\b/,              // Super na tom je...
+    /^Tak\u017ee m\u00e1me\b/,        // Takže máme velmi dobrou response rate...
   ];
 
   // Blockquotes — Demo section speech
@@ -1029,7 +1033,8 @@ document.addEventListener('DOMContentLoaded', function() {
         !(el.compareDocumentPosition(principyAnchor) & Node.DOCUMENT_POSITION_FOLLOWING)) return;
     const t = el.textContent.trim();
     if (t.startsWith('\u274C') || t.startsWith('\u2714') || t.length < 6) return;
-    if (/^(C\u00edl|Ot\u00e1zky|F\u00e1ze|Shrnut\u00ed|Cena|Next steps|Bezpe\u010dn\u00e1|Kontext|P\u0159\u00edklad|Akce|T\u00e9mata|Rychlost|Rychl\u00e1|T\u0159eba vyu\u017e\u00edt|Potvrzen\u00ed)/.test(t)) return;
+    // Skip labels and action instructions (note: Cíl: with colon, not Cílem)
+    if (/^(C\u00edl:|Ot\u00e1zky:|F\u00e1ze|Shrnut\u00ed|Cena|Next steps|Bezpe\u010dn\u00e1|Kontext|P\u0159\u00edklad|Akce|T\u00e9mata|Rychlost|Rychl\u00e1|T\u0159eba vyu\u017e\u00edt|Potvrzen\u00ed|Rozklikni|Vyber|P\u0159echod)/.test(t)) return;
 
     if (FULL_QUOTE.test(t) || IMPLICIT_SPEECH.some(re => re.test(t))) {
       el.classList.add('sales-script');
