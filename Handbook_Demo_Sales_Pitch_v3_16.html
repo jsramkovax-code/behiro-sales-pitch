@@ -972,6 +972,33 @@ li { font-size: 0.92rem; line-height: 1.68; color: #444; margin-bottom: 0.15em; 
 #progress-bar { top: 76px !important; }
 body { padding-top: 80px !important; }
 @media (max-width: 620px) { body { padding-top: 84px !important; } }
+
+/* Cross-page link in nav */
+#nav-other-page {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem; font-weight: 600;
+  color: #7c3aed;
+  text-decoration: none !important;
+  padding: 4px 11px;
+  border: 1.5px solid #c4b5fd;
+  border-radius: 6px;
+  transition: background 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+#nav-other-page:hover { background: #7c3aed; color: #fff; border-color: #7c3aed; }
+
+#nav-other-page {
+  margin-left: auto; flex-shrink: 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem; font-weight: 600;
+  color: #7c3aed; text-decoration: none !important;
+  padding: 4px 11px; border: 1.5px solid #c4b5fd;
+  border-radius: 6px; transition: background 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+#nav-other-page:hover { background: #7c3aed; color: #fff; border-color: #7c3aed; }
 </style>
 
 <div id="progress-bar"></div>
@@ -985,6 +1012,8 @@ body { padding-top: 80px !important; }
     <a href="#anchor-demo">🖥 Demo</a>
     <a href="#anchor-closing">✅ Closing</a>
     <a href="#anchor-principy">📌 Principy</a>
+  
+    <a id="nav-other-page" href="Handbook_Demo_Objections.html">🛡 Objections →</a>
   </div>
 </nav>
 
