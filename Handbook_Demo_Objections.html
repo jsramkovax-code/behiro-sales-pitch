@@ -1059,6 +1059,7 @@ details details + details details { margin-top: 4px !important; }
 /* Summary — slightly more padding so it breathes */
 details > summary { padding: 4px 4px 4px 2px; }
 details:not(details details) > summary { font-size: 0.97rem !important; }
+mark.search-hl-active { background: rgba(124,58,237,0.45) !important; outline: 2px solid #7c3aed; border-radius: 2px; }
 </style>
 <style id="obj-extra">#section-nav a.active{background:#7c3aed!important;color:#fff!important;}</style>
 </head><body>
@@ -1093,7 +1094,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <article id="2d6d8a3f-5e39-8076-aee7-ed1856d5d0ed" class="page sans"><div id="search-wrap">
   <div id="search-box-inner">
-    <input id="obj-search" type="search" placeholder="Hledat námitku…" autocomplete="off"/>
+    <input id="obj-search" type="search" placeholder="Hledat námitku… (Enter = další)" autocomplete="off"/>
     <button id="search-clear">✕ Smazat</button>
     <span id="search-count"></span>
   </div>
@@ -1210,23 +1211,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script id="obj-search-js">
 document.addEventListener('DOMContentLoaded', function() {
-  const input   = document.getElementById('obj-search');
+  const input    = document.getElementById('obj-search');
   const clearBtn = document.getElementById('search-clear');
-  const countEl = document.getElementById('search-count');
+  const countEl  = document.getElementById('search-count');
   if (!input) return;
 
-  // Build flat list of all details with their text + parent details
   const allDetails = Array.from(document.querySelectorAll('details'));
   const total = allDetails.length;
+  let matches = [];   // mark.search-hl elements
+  let matchIdx = -1;  // current position
 
-  function getFullText(el) {
-    // summary text + all paragraph/li text inside
-    return el.textContent.toLowerCase();
-  }
+  function getFullText(el) { return el.textContent.toLowerCase(); }
 
   function doSearch(q) {
     q = q.trim().toLowerCase();
     clearBtn.style.display = q ? 'inline' : 'none';
+    matches = []; matchIdx = -1;
 
     if (!q) {
       allDetails.forEach(d => d.classList.remove('search-hidden'));
@@ -1235,58 +1235,88 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    let visible = 0;
+    // Filter details
+    let visibleCount = 0;
     allDetails.forEach(d => {
-      const matches = getFullText(d).includes(q);
-      d.classList.toggle('search-hidden', !matches);
-      if (matches) { d.open = true; visible++; }
+      const found = getFullText(d).includes(q);
+      d.classList.toggle('search-hidden', !found);
+      if (found) { d.open = true; visibleCount++; }
     });
-
     // Show parents of visible children
     allDetails.forEach(d => {
       if (!d.classList.contains('search-hidden')) {
-        let parent = d.parentElement;
-        while (parent) {
-          if (parent.tagName === 'DETAILS') {
-            parent.classList.remove('search-hidden');
-            parent.open = true;
-          }
-          parent = parent.parentElement;
+        let p = d.parentElement;
+        while (p) {
+          if (p.tagName === 'DETAILS') { p.classList.remove('search-hidden'); p.open = true; }
+          p = p.parentElement;
         }
       }
     });
 
-    countEl.textContent = visible + ' z ' + total;
     highlightText(q);
+    matches = Array.from(document.querySelectorAll('mark.search-hl'));
+
+    if (matches.length > 0) {
+      matchIdx = 0;
+      scrollToMatch(0);
+    }
+    updateCount();
+  }
+
+  function scrollToMatch(idx) {
+    matches.forEach((m, i) => {
+      m.classList.toggle('search-hl-active', i === idx);
+    });
+    if (matches[idx]) {
+      matches[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  function updateCount() {
+    if (!matches.length) {
+      countEl.textContent = matches.length ? '' : (input.value.trim() ? '0 výsledků' : '');
+      return;
+    }
+    countEl.textContent = (matchIdx + 1) + ' / ' + matches.length;
   }
 
   function highlightText(q) {
     removeHighlights();
     if (!q) return;
+    const re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
     const walker = document.createTreeWalker(
       document.querySelector('article'), NodeFilter.SHOW_TEXT, null, false);
     const nodes = [];
     while (walker.nextNode()) nodes.push(walker.currentNode);
-    const re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
     nodes.forEach(node => {
       if (!node.textContent.toLowerCase().includes(q)) return;
-      const parent = node.parentNode;
-      if (parent.nodeName === 'SCRIPT' || parent.nodeName === 'STYLE') return;
+      const par = node.parentNode;
+      if (!par || par.nodeName === 'SCRIPT' || par.nodeName === 'STYLE' || par.nodeName === 'MARK') return;
       const span = document.createElement('span');
       span.innerHTML = node.textContent.replace(re, '<mark class="search-hl">$1</mark>');
-      parent.replaceChild(span, node);
+      par.replaceChild(span, node);
     });
   }
 
   function removeHighlights() {
-    document.querySelectorAll('mark.search-hl').forEach(m => {
-      m.replaceWith(m.textContent);
-    });
-    // Normalize text nodes
+    document.querySelectorAll('mark.search-hl').forEach(m => m.replaceWith(m.textContent));
     document.querySelector('article').normalize();
   }
 
   input.addEventListener('input', () => doSearch(input.value));
+
+  input.addEventListener('keydown', e => {
+    if (!matches.length) return;
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      matchIdx = e.shiftKey
+        ? (matchIdx - 1 + matches.length) % matches.length
+        : (matchIdx + 1) % matches.length;
+      scrollToMatch(matchIdx);
+      updateCount();
+    }
+  });
+
   clearBtn.addEventListener('click', () => { input.value = ''; doSearch(''); input.focus(); });
 });
 </script>
