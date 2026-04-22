@@ -1039,8 +1039,10 @@ document.addEventListener('DOMContentLoaded', function() {
   setActive();
   links.forEach(link => {
     link.addEventListener('click', function(e) {
+      const href = this.getAttribute('href');
+      if (!href || !href.startsWith('#')) return;
       e.preventDefault();
-      const target = document.getElementById(this.getAttribute('href').slice(1));
+      const target = document.getElementById(href.slice(1));
       if (target) window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - 44, behavior: 'smooth' });
     });
   });
