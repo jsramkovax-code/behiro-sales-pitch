@@ -1018,6 +1018,25 @@ body { padding-top: 80px !important; }
   white-space: nowrap;
 }
 #nav-other-page:hover { background: #7c3aed; color: #fff; border-color: #7c3aed; }
+/* ── Section collapse ──────────────────────────────── */
+.section-body[data-open="0"] { display: none; }
+h1:not(.page-main-title), h2#principy {
+  position: relative;
+  padding-right: 2.2em !important;
+}
+h1:not(.page-main-title)::after, h2#principy::after {
+  content: "▾";
+  position: absolute; right: 0.7em; top: 50%; transform: translateY(-50%);
+  font-size: 0.75em; opacity: 0.7; transition: transform 0.2s;
+  display: inline-block;
+}
+h1.section-collapsed::after, h2.section-collapsed::after {
+  transform: translateY(-50%) rotate(-90deg);
+}
+@media (max-width: 620px) {
+  h1:not(.page-main-title), h2#principy { padding-right: 2.4em !important; }
+}
+
 </style>
 
 <div id="progress-bar"></div>
@@ -1043,7 +1062,71 @@ window.addEventListener('scroll', () => {
   document.getElementById('progress-bar').style.width = pct + '%';
   document.getElementById('back-top').classList.toggle('visible', s.scrollTop > 200);
 });
+
+function openSection(sectionId) {
+  const h = document.getElementById(sectionId);
+  if (!h) return;
+  const body = h.closest('[style*="display:contents"]')
+    ? h.closest('[style*="display:contents"]').nextElementSibling
+    : h.nextElementSibling;
+  // find the section-body following this heading's container
+  const article = document.querySelector('article.page');
+  if (!article) return;
+  let container = h;
+  while (container.parentElement !== article) {
+    container = container.parentElement;
+    if (!container) return;
+  }
+  // the section-body is the sibling right after the container
+  let sb = container.nextElementSibling;
+  while (sb && !sb.classList.contains('section-body')) sb = sb.nextElementSibling;
+  if (sb && sb.dataset.open === '0') {
+    sb.dataset.open = '1';
+    h.classList.remove('section-collapsed');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+  // ── Section collapse ───────────────────────────────
+  const SECTIONS = ['discovery', 'demo', 'closing', 'principy'];
+  const article = document.querySelector('article.page');
+
+  if (article) {
+    SECTIONS.forEach(id => {
+      const heading = document.getElementById(id);
+      if (!heading) return;
+      // Walk up to direct child of article
+      let container = heading;
+      while (container.parentElement !== article) {
+        container = container.parentElement;
+        if (!container || container === document.body) return;
+      }
+      // Collect siblings until next anchor div
+      const siblings = [];
+      let el = container.nextElementSibling;
+      while (el) {
+        if (el.id && el.id.startsWith('anchor-')) break;
+        siblings.push(el);
+        el = el.nextElementSibling;
+      }
+      if (!siblings.length) return;
+      // Wrap
+      const body = document.createElement('div');
+      body.className = 'section-body';
+      body.dataset.open = '1';
+      article.insertBefore(body, container.nextSibling);
+      siblings.forEach(s => body.appendChild(s));
+      // Toggle
+      heading.style.cursor = 'pointer';
+      heading.addEventListener('click', () => {
+        const open = body.dataset.open === '1';
+        body.dataset.open = open ? '0' : '1';
+        heading.classList.toggle('section-collapsed', open);
+      });
+    });
+  }
+
+  // ── Active nav ─────────────────────────────────────
   const ids = ['anchor-pred-schuzkou','anchor-discovery','anchor-demo','anchor-closing','anchor-principy'];
   const links = document.querySelectorAll('#section-nav a');
   function setActive() {
@@ -1056,13 +1139,25 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   window.addEventListener('scroll', setActive, { passive: true });
   setActive();
+
   links.forEach(link => {
     link.addEventListener('click', function(e) {
       const href = this.getAttribute('href');
       if (!href || !href.startsWith('#')) return;
       e.preventDefault();
-      const target = document.getElementById(href.slice(1));
-      if (target) window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - 44, behavior: 'smooth' });
+      // Map anchor id → heading id
+      const sectionMap = {
+        'anchor-discovery': 'discovery',
+        'anchor-demo': 'demo',
+        'anchor-closing': 'closing',
+        'anchor-principy': 'principy',
+      };
+      const anchorId = href.slice(1);
+      if (sectionMap[anchorId]) openSection(sectionMap[anchorId]);
+      setTimeout(() => {
+        const target = document.getElementById(anchorId);
+        if (target) window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' });
+      }, 30);
     });
   });
 });
