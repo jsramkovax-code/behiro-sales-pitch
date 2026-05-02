@@ -755,7 +755,7 @@ body {
   padding: 60px 28px 100px;
   line-height: 1.7;
   white-space: normal;
-  font-size: 15px;
+  font-size: 17px;
 }
 
 /* ── Nav ─────────────────────────────────────────── */
@@ -928,29 +928,31 @@ li { font-size: 0.92rem; line-height: 1.68; color: #444; margin-bottom: 0.15em; 
 .anchor-target { display: block; height: 0; overflow: hidden; }
 
 /* ── Mobile ───────────────────────────────────────── */
-@media (max-width: 620px) {
-  body { padding: 58px 14px 80px !important; font-size: 16px !important; }
-  .column-list { flex-direction: column !important; gap: 10px !important; }
-  .column { padding: 14px 16px !important; }
+@media (max-width: 768px) {
+  body { padding: 64px 18px 80px !important; font-size: 18px !important; max-width: 100% !important; }
+  .column-list { flex-direction: column !important; gap: 12px !important; }
+  .column { padding: 16px 18px !important; }
   #nav-label { display: none; }
-  .page-main-title { font-size: 1.35rem !important; line-height: 1.2 !important; }
-  h2 { font-size: 1rem !important; }
-  h3 { font-size: 0.75rem !important; }
-  p, li { font-size: 0.97rem !important; line-height: 1.75 !important; }
-  .callout { padding: 14px 16px !important; gap: 10px !important; }
-  details > summary { font-size: 1rem !important; padding: 14px 10px !important; min-height: 48px !important; }
-  details > summary::before { font-size: 0.6rem !important; }
-  details:not(details details) > summary { font-size: 1.02rem !important; }
-  #back-top { width: 44px !important; height: 44px !important; font-size: 18px !important; bottom: 20px !important; right: 16px !important; }
+  .page-main-title { font-size: 1.5rem !important; line-height: 1.2 !important; }
+  h2 { font-size: 1.1rem !important; }
+  h3 { font-size: 0.8rem !important; letter-spacing: 0.08em !important; }
+  h4 { font-size: 1rem !important; }
+  p, li { font-size: 1rem !important; line-height: 1.7 !important; color: #2a1a5e !important; }
+  .callout { padding: 16px 18px !important; gap: 12px !important; }
+  details > summary { font-size: 1.05rem !important; padding: 14px 10px !important; min-height: 52px !important; line-height: 1.4 !important; }
+  details > summary::before { font-size: 0.65rem !important; }
+  details:not(details details) > summary { font-size: 1.08rem !important; }
+  #back-top { width: 48px !important; height: 48px !important; font-size: 20px !important; bottom: 20px !important; right: 16px !important; }
   #section-nav { overflow-x: auto; scrollbar-width: none; }
   #section-nav::-webkit-scrollbar { display: none; }
-  #nav-inner { padding: 0 12px !important; gap: 2px !important; }
-  #section-nav a { font-size: 0.8rem !important; padding: 6px 10px !important; }
-  #nav-other-page { font-size: 0.75rem !important; padding: 5px 9px !important; }
-  h1:not(.page-main-title) { font-size: 0.7rem !important; padding: 4px 12px !important; }
-  table { font-size: 0.85rem !important; display: block; overflow-x: auto; }
-  #obj-search { font-size: 16px !important; }
-  #toggle-all-btn { min-height: 44px !important; padding: 0 16px !important; font-size: 0.85rem !important; }
+  #nav-inner { padding: 0 14px !important; gap: 2px !important; }
+  #section-nav a { font-size: 0.88rem !important; padding: 7px 11px !important; }
+  #nav-other-page { font-size: 0.82rem !important; padding: 5px 10px !important; }
+  h1:not(.page-main-title) { font-size: 0.78rem !important; padding: 5px 14px !important; }
+  table { font-size: 0.95rem !important; display: block; overflow-x: auto; }
+  #obj-search { font-size: 18px !important; }
+  #toggle-all-btn { min-height: 48px !important; padding: 0 18px !important; font-size: 0.9rem !important; }
+  blockquote { font-size: 1rem !important; padding: 14px 16px !important; }
 }
 
 /* Playbook switcher */
